@@ -1,19 +1,27 @@
 
 def check_woman_priority(men:dict, women:dict, man:str, woman:str, current_pairs:dict) -> bool:
-    for member in range(men.get(man).index(woman)):
-        potential_woman = men.get(man)[member]
-        potential_womans_man = current_pairs.get(potential_woman)
-        if women.get(potential_woman).index(man) < women.get(potential_woman).index(potential_womans_man):
-            return True  # Нашли блокирующую пару
-    
+    man_pref = men.get(man) # получаем список предпочтений конкретного мужчины
+    wife_index = man_pref.index(woman) # получаем индекс его текущей жены
+    for i in range(wife_index):
+        preferred_woman = man_pref[i] # женщина, которую мужчина предпочитает больше
+        current_woman_man = current_pairs.get(preferred_woman) # текущий мужчина данной женщины
+        woman_preferences = women.get(preferred_woman) # список предпочтений данной женщины
+        man_index = woman_preferences.index(man) # получаем индекс мужчины в ее предпочтениях
+        husband_index = woman_preferences.index(current_woman_man) # получаем индекс ее текущего мужчины
+        if man_index < husband_index:
+            return True
+        
     return False
+
 
 def stamble_match(men:dict, women:dict, pairs:list) -> bool:
     current_pairs = {woman : man for man, woman in pairs}
     for man, woman in pairs:
-        if men.get(man)[0] != woman:
+        woman_index = men.get(man).index(woman)
+        if woman_index > 0:
             if check_woman_priority(men, women, man, woman, current_pairs):
                 return False
+    
     return True
 
 def main(test_pairs:list) -> str:
@@ -27,8 +35,7 @@ def main(test_pairs:list) -> str:
         'Y': ['A', 'B', 'C'],
         'Z': ['C', 'A', 'B']
     }
-    pairs = test_pairs
-    if stamble_match(men, women, pairs):
+    if stamble_match(men, women, test_pairs):
         return 'Устойчивое паросочетание'
     return 'Неустойчивое паросочетание'
 
